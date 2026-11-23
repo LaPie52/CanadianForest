@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#10291f">
+<title>La grande chasse photo — Canada</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main id="app">
+  <section id="home" class="screen">
+    <div class="home-card">
+      <div class="maple">🍁 <span>CANADA • WILDERNESS</span> 🍁</div>
+      <h1>La grande<br><em>chasse photo</em></h1>
+      <p class="tagline">30 secondes dans la forêt canadienne. Des rencontres furtives, des réflexes… et un classement à conquérir.</p>
+      <label class="nickname-label" for="nickname">TON SURNOM</label>
+      <input id="nickname" maxlength="18" autocomplete="nickname" placeholder="Ex. Trappeur42">
+      <button id="startBtn" class="gold-button">ENTRER DANS LA FORÊT <span>→</span></button>
+      <div class="leaderboard">
+        <div class="leader-heading"><span>🏆</span><div><b>TOP 10 MONDIAL</b><small>Les meilleurs chasseurs</small></div><button id="refreshBoard" aria-label="Actualiser le classement">↻</button></div>
+        <ol id="leaderList"><li class="muted">Chargement du classement…</li></ol>
+        <p id="boardStatus" class="board-status">Classement partagé en ligne</p>
+      </div>
+      <p class="small-print">Écureuil, tamia, oie · +100 | Renard, cerf · +200 | Ours · +300<br>Viser une personne : −500 points</p>
+    </div>
+  </section>
+
+  <section id="gameScreen" class="screen hidden">
+    <header class="game-hud">
+      <div class="hud-pill"><span>⏱</span><b id="timer">30</b><small>SEC</small></div>
+      <div class="hud-brand">🍁 FORÊT CANADIENNE</div>
+      <div class="hud-pill score-pill"><span>★</span><b id="score">0</b><small>PTS</small></div>
+    </header>
+    <div id="playfield" aria-label="Terrain de jeu">
+      <img id="forest" src="assets/forest.jpg" alt="">
+      <div class="vignette"></div>
+      <div id="targets"></div>
+      <div id="reticle" aria-hidden="true"><i></i></div>
+      <div id="hitFlash"></div>
+      <div id="feedback" aria-live="polite"></div>
+    </div>
+    <footer class="game-footer">
+      <span id="playerTag">Joueur</span>
+      <span>Vise et touche une cible avant qu’elle disparaisse</span>
+      <button id="soundBtn">♫ Son : ON</button>
+    </footer>
+  </section>
+
+  <section id="result" class="screen hidden">
+    <div class="result-card">
+      <div class="maple">🍁 FIN DE PARTIE 🍁</div>
+      <h2 id="resultTitle">Bien joué !</h2>
+      <div class="final-score"><strong id="finalScore">0</strong><span>POINTS</span></div>
+      <p id="saveStatus">Enregistrement du score…</p>
+      <h3>🏆 TOP 10</h3>
+      <ol id="resultBoard"></ol>
+      <button id="againBtn" class="gold-button">REJOUER <span>↻</span></button>
+      <button id="homeBtn" class="plain-button">Retour à l’accueil</button>
+    </div>
+  </section>
+  <div id="rotateHint" class="rotate-hint hidden">↻ Pour une meilleure expérience, tourne ton téléphone à l’horizontale.</div>
+</main>
+<script src="config.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

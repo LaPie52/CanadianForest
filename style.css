@@ -1,0 +1,62 @@
+*{box-sizing:border-box}
+:root{--pine:#10291f;--pine2:#1b4431;--gold:#e8c36f;--cream:#f7f0df;--muted:#c9d1c4}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0b1d16;color:var(--cream);font-family:"DM Sans",system-ui,sans-serif}
+button,input{font:inherit}button{touch-action:manipulation}
+.screen{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.hidden{display:none!important}
+#home{overflow:auto;padding:18px;background:linear-gradient(#071a12a8,#071a12d9),url("assets/forest.jpg") center/cover}
+.home-card,.result-card{width:min(540px,96vw);max-height:96dvh;overflow:auto;padding:clamp(20px,4vw,36px);border:1px solid #e8c36f66;border-radius:24px;background:linear-gradient(150deg,#153b2cf2,#0c241cf5);box-shadow:0 24px 80px #0009;text-align:center}
+.maple{font-size:14px;font-weight:800;letter-spacing:.18em;color:var(--gold)}
+.maple span{font-size:10px;vertical-align:middle}
+h1{font:800 clamp(38px,8vw,58px)/.98 "Playfair Display",Georgia,serif;margin:15px 0;color:#fff4d9}
+h1 em{color:var(--gold);font-style:normal}
+.tagline{max-width:410px;margin:0 auto 22px;color:#d8e0d4;line-height:1.5;font-size:14px}
+.nickname-label{display:block;text-align:left;margin:0 auto 6px;max-width:370px;font-size:11px;font-weight:800;letter-spacing:.13em;color:var(--gold)}
+#nickname{display:block;width:min(370px,100%);margin:0 auto 10px;padding:14px 15px;border:1px solid #e8c36f77;border-radius:11px;background:#f8f2e6;color:#17281d;font-size:16px;outline:none}
+#nickname:focus{box-shadow:0 0 0 3px #e8c36f55}
+.gold-button{display:flex;align-items:center;justify-content:center;gap:18px;width:min(370px,100%);margin:0 auto;padding:14px 18px;border:0;border-radius:12px;background:linear-gradient(135deg,#f1d58d,#d7a943);color:#17291e;font-weight:900;letter-spacing:.035em;box-shadow:0 5px 0 #87652a;cursor:pointer}
+.gold-button:active{transform:translateY(2px);box-shadow:0 3px 0 #87652a}
+.leaderboard{margin:22px auto 12px;width:min(370px,100%);padding:13px 15px;border-radius:14px;background:#0718108c;border:1px solid #ffffff1b;text-align:left}
+.leader-heading{display:flex;align-items:center;gap:10px;padding-bottom:8px;border-bottom:1px solid #ffffff20}
+.leader-heading>span{font-size:23px}.leader-heading b{display:block;font-size:13px;letter-spacing:.07em;color:#f5dfaa}.leader-heading small{display:block;color:#b9c8ba;font-size:11px}
+#refreshBoard{margin-left:auto;border:1px solid #ffffff33;border-radius:8px;background:#ffffff10;color:white;width:34px;height:32px;font-size:20px}
+#leaderList,.result-card ol{padding-left:27px;margin:9px 0 0}
+#leaderList li,.result-card li{padding:5px 4px;color:#e8eee4;font-size:13px;border-bottom:1px solid #ffffff12}
+#leaderList li::marker,.result-card li::marker{color:var(--gold);font-weight:800}
+#leaderList li span,.result-card li span{float:right;font-weight:800;color:var(--gold);font-variant-numeric:tabular-nums}
+.muted{color:#b9c8ba!important}
+.board-status{margin:8px 0 0;text-align:center;color:#b5c6b7;font-size:10px}
+.small-print{font-size:11px;line-height:1.6;color:#c4d0c3;margin:12px 0 0}
+#gameScreen{flex-direction:column;background:#07170f}
+.game-hud{position:absolute;z-index:10;top:max(10px,env(safe-area-inset-top));left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:0 clamp(10px,2vw,24px);pointer-events:none}
+.hud-pill{display:flex;align-items:center;gap:7px;padding:8px 13px;border:1px solid #ffffff35;border-radius:12px;background:#07170de8;box-shadow:0 4px 15px #0005}
+.hud-pill span{color:var(--gold);font-size:18px}.hud-pill b{font-size:clamp(20px,3vw,30px);font-variant-numeric:tabular-nums}.hud-pill small{font-size:9px;color:#c3d0c2;font-weight:800}
+.hud-brand{font-size:11px;font-weight:900;letter-spacing:.12em;text-shadow:0 2px 4px #000}
+#playfield{position:relative;width:100%;height:100%;overflow:hidden;touch-action:pan-y;background:#142c1e}
+#forest{position:absolute;width:100%;height:100%;inset:0;object-fit:cover;user-select:none;pointer-events:none}
+.vignette{position:absolute;inset:0;pointer-events:none;background:linear-gradient(#0003,transparent 18%,transparent 82%,#0005),radial-gradient(ellipse,transparent 50%,#0004 100%)}
+.target{position:absolute;z-index:4;padding:0;border:0;background:transparent;opacity:0;pointer-events:none;transform:translateY(20px) scale(.94);transition:opacity .13s,transform .18s;filter:drop-shadow(0 4px 4px #0008);cursor:crosshair;touch-action:manipulation}
+.target img{width:100%;height:100%;display:block;object-fit:contain;pointer-events:none}
+.target.visible{opacity:1;pointer-events:auto;transform:translate(0,0) scale(1);animation:peek .2s ease-out}
+@keyframes peek{from{filter:brightness(.7) drop-shadow(0 4px 4px #0008)}to{filter:brightness(1) drop-shadow(0 4px 4px #0008)}}
+#reticle{position:absolute;z-index:8;left:50%;top:50%;width:42px;height:42px;border:2px solid #fff;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;filter:drop-shadow(0 1px 4px #000)}
+#reticle:before,#reticle:after{content:"";position:absolute;background:#fff}
+#reticle:before{width:2px;height:58px;left:18px;top:-10px}#reticle:after{height:2px;width:58px;top:18px;left:-10px}
+#reticle i{position:absolute;width:5px;height:5px;background:#fff;border-radius:50%;left:16px;top:16px}
+#reticle.kick{transform:translate(-50%,-65%) scale(.8)}
+#hitFlash{position:absolute;z-index:9;inset:0;background:#fff;opacity:0;pointer-events:none}
+#hitFlash.bang{animation:bang .12s}@keyframes bang{from{opacity:.22}to{opacity:0}}
+#feedback{position:absolute;z-index:11;left:50%;top:53%;transform:translate(-50%,-50%);font-size:clamp(24px,5vw,42px);font-weight:900;text-shadow:0 3px 8px #000;opacity:0;pointer-events:none;white-space:nowrap}
+#feedback.show{animation:feedback .62s ease-out}@keyframes feedback{0%{opacity:0;transform:translate(-50%,-20%) scale(.7)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}100%{opacity:0;transform:translate(-50%,-85%) scale(1)}}
+.game-footer{position:absolute;z-index:10;bottom:max(8px,env(safe-area-inset-bottom));left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:0 14px;gap:8px;font-size:11px;text-shadow:0 2px 4px #000;pointer-events:none}
+#playerTag{font-weight:800;color:var(--gold)}#soundBtn{pointer-events:auto;border:1px solid #ffffff44;border-radius:20px;background:#07170de8;color:white;padding:8px 12px}
+.result-card h2{font:700 34px "Playfair Display",Georgia,serif;margin:14px 0}
+.final-score{display:flex;align-items:baseline;justify-content:center;gap:9px;margin:10px}
+.final-score strong{font-size:58px;color:var(--gold);font-variant-numeric:tabular-nums}.final-score span{font-size:11px;font-weight:900;letter-spacing:.12em}
+#saveStatus{font-size:13px;color:#d5dfd2;min-height:20px}
+.result-card h3{margin:18px 0 0;color:#f1d58d}
+.result-card ol{max-width:330px;margin:8px auto 20px;text-align:left}
+.plain-button{display:block;margin:14px auto 0;border:0;background:none;color:#d8e0d4;text-decoration:underline;padding:8px}
+.rotate-hint{position:absolute;z-index:40;bottom:12px;left:50%;transform:translateX(-50%);width:max-content;max-width:92vw;padding:8px 12px;border-radius:9px;background:#07170de8;text-align:center;font-size:12px}
+@media(orientation:portrait) and (max-width:700px){.hud-brand{display:none}.game-footer>span:nth-child(2){max-width:48%;text-align:center}.target{transform:translateY(14px) scale(.9)}}
+@media(max-height:500px){.home-card,.result-card{padding:14px 20px}.leaderboard{margin:12px auto 8px}.tagline{margin-bottom:12px}h1{font-size:36px}}
