@@ -30,6 +30,9 @@
   const active = new Set();
   const targetEls = new Map();
 
+  const boyVoice = new Audio("assets/pas-le-docteur.mp3");
+  boyVoice.preload = "auto";
+
   function showScreen(which) {
     [home, gameScreen, result].forEach(el => el.classList.add("hidden"));
     which.classList.remove("hidden");
@@ -95,6 +98,7 @@
     targets.forEach(t => {
       const el = document.createElement("button");
       el.type = "button"; el.className = "target " + t.side;
+      el.setAttribute("data-target", t.id);
       el.setAttribute("aria-label", t.name + ", " + (t.points < 0 ? "pénalité" : t.points + " points"));
       el.style.left = t.x + "%"; el.style.top = t.y + "%";
       el.style.width = t.w + "%"; el.style.height = t.h + "%";
@@ -105,19 +109,58 @@
         ev.preventDefault(); ev.stopPropagation();
         if (!running || !active.has(t.id)) return;
         score += t.points; scoreEl.textContent = score.toLocaleString("fr-FR");
-        showFeedback(t.points, t.name); playShot(); hideTarget(t.id); kick();
+        showFeedback(t.points, t.name, ev.clientX, ev.clientY);
+        playShot();
+        if (t.id === "boy") {
+          playBoyPenaltySound();
+          speakBoyLine();
+          playBoyVoice();
+        }
+        hideTarget(t.id); kick();
       });
       targetsRoot.appendChild(el); targetEls.set(t.id, el);
     });
   }
-  function showFeedback(points, name) {
-    feedback.textContent = (points > 0 ? "+" : "") + points + " • " + name;
-    feedback.style.color = points < 0 ? "#ffaaa0" : "#ffe7a4";
-    feedback.classList.remove("show"); void feedback.offsetWidth; feedback.classList.add("show");
+  function showFeedback(points, name, clientX, clientY) {
+    if (feedback) {
+      feedback.textContent = (points > 0 ? "+" : "") + points + " • " + name;
+      feedback.style.color = points < 0 ? "#ffaaa0" : "#ffe7a4";
+      feedback.classList.remove("show"); void feedback.offsetWidth; feedback.classList.add("show");
+    }
+    const rect = field.getBoundingClientRect();
+    const x = typeof clientX === "number" ? clientX - rect.left : rect.width / 2;
+    const y = typeof clientY === "number" ? clientY - rect.top : rect.height * 0.5;
+
+    const popup = document.createElement("div");
+    const isNeg = points < 0;
+    popup.className = "score-popup " + (isNeg ? "neg" : "pos");
+    popup.style.left = Math.max(48, Math.min(rect.width - 48, x)) + "px";
+    popup.style.top = Math.max(48, Math.min(rect.height - 48, y)) + "px";
+
+    const ptsEl = document.createElement("span");
+    ptsEl.className = "pts";
+    ptsEl.textContent = (points > 0 ? "+" : "") + points.toLocaleString("fr-FR");
+
+    const tagEl = document.createElement("span");
+    tagEl.className = "tag";
+    tagEl.textContent = isNeg ? `${name} • Aïe !` : name;
+
+    popup.append(ptsEl, tagEl);
+    field.appendChild(popup);
+
+    if (isNeg) {
+      field.classList.remove("shake");
+      void field.offsetWidth;
+      field.classList.add("shake");
+    }
+
+    setTimeout(() => popup.remove(), 840);
   }
   function hideTarget(id) {
     const el = targetEls.get(id); if (!el) return;
-    el.classList.remove("visible"); active.delete(id);
+    el.classList.remove("visible", "fly-ltr", "fly-rtl");
+    el.style.removeProperty("--peek-dur");
+    active.delete(id);
     if (hideTimers.has(id)) { clearTimeout(hideTimers.get(id)); hideTimers.delete(id); }
   }
   function spawnTarget() {
@@ -127,8 +170,19 @@
     if (!pool.length) return;
     const target = pool[Math.floor(Math.random() * pool.length)];
     lastTarget = target.id; active.add(target.id);
-    targetEls.get(target.id).classList.add("visible");
-    const duration = 720 + Math.random() * 850;
+
+    const el = targetEls.get(target.id);
+    el.classList.remove("fly-ltr", "fly-rtl");
+
+    let duration = 900 + Math.random() * 850;
+    if (target.id === "goose") {
+      const dirClass = Math.random() < 0.5 ? "fly-ltr" : "fly-rtl";
+      el.classList.add(dirClass);
+      duration = 3400;
+    }
+
+    el.style.setProperty("--peek-dur", duration + "ms");
+    el.classList.add("visible");
     hideTimers.set(target.id, setTimeout(() => hideTarget(target.id), duration));
   }
   function scheduleSpawn() {
@@ -157,6 +211,54 @@
       const bass=a.createOscillator(), bg=a.createGain(); bass.type="sine"; bass.frequency.setValueAtTime(105,now); bass.frequency.exponentialRampToValueAtTime(30,now+.24);
       bg.gain.setValueAtTime(.85,now); bg.gain.exponentialRampToValueAtTime(.001,now+.27); bass.connect(bg); bg.connect(comp); bass.start(); bass.stop(now+.28);
     } catch(e) {}
+  }
+  function playBoyPenaltySound() {
+    if (!musicOn) return;
+    try {
+      const a = getAudio();
+      const now = a.currentTime;
+      const notes = [
+        { start: 0, dur: 0.14, fStart: 260, fEnd: 155 },
+        { start: 0.13, dur: 0.22, fStart: 195, fEnd: 95 }
+      ];
+      notes.forEach(n => {
+        const osc = a.createOscillator();
+        const gain = a.createGain();
+        const filter = a.createBiquadFilter();
+        osc.type = "sawtooth";
+        osc.frequency.setValueAtTime(n.fStart, now + n.start);
+        osc.frequency.exponentialRampToValueAtTime(n.fEnd, now + n.start + n.dur);
+        filter.type = "lowpass";
+        filter.frequency.setValueAtTime(900, now + n.start);
+        gain.gain.setValueAtTime(0.001, now + n.start);
+        gain.gain.exponentialRampToValueAtTime(0.16, now + n.start + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0008, now + n.start + n.dur);
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(a.destination);
+        osc.start(now + n.start);
+        osc.stop(now + n.start + n.dur + 0.02);
+      });
+    } catch (e) {}
+  }
+  function speakBoyLine() {
+    if (!musicOn || typeof window.speechSynthesis === "undefined") return;
+    try {
+      window.speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance("Pas le docteur !");
+      utter.lang = "fr-FR";
+      utter.rate = 1.15;
+      utter.pitch = 1.25;
+      utter.volume = 1;
+      window.speechSynthesis.speak(utter);
+    } catch (e) {}
+  }
+  function playBoyVoice() {
+    if (!musicOn) return;
+    try {
+      boyVoice.currentTime = 0;
+      boyVoice.play().catch(() => {});
+    } catch (e) {}
   }
   // Courte mélodie originale, folk et aventure, sans reprendre une chanson existante.
   const melody=[392,440,523.25,587.33,523.25,440,392,329.63,392,440,523.25,659.25,587.33,523.25,440,392];
